@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Torff")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+67693798d50a3c64eebe3088bb7c51656a5a9da7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c95c200fe3d2354525e5bff7ceed67c78010fc1a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Torff")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Torff")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
