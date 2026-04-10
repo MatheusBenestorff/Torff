@@ -8,19 +8,19 @@
     "net10.0": []
   },
   "packageFolders": {
-    "/home/matheusbenestorff/.nuget/packages/": {}
+    "/home/matheus/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/matheusbenestorff/Documents/CSProjects/Torff/src/Torff.csproj",
+      "projectUniqueName": "/home/matheus/Documentos/CSProjects/Torff/src/Torff.csproj",
       "projectName": "Torff",
-      "projectPath": "/home/matheusbenestorff/Documents/CSProjects/Torff/src/Torff.csproj",
-      "packagesPath": "/home/matheusbenestorff/.nuget/packages/",
-      "outputPath": "/home/matheusbenestorff/Documents/CSProjects/Torff/src/obj/",
+      "projectPath": "/home/matheus/Documentos/CSProjects/Torff/src/Torff.csproj",
+      "packagesPath": "/home/matheus/.nuget/packages/",
+      "outputPath": "/home/matheus/Documentos/CSProjects/Torff/src/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/matheusbenestorff/.nuget/NuGet/NuGet.Config"
+        "/home/matheus/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -66,7 +66,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.105/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
