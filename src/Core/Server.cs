@@ -25,7 +25,17 @@ namespace Torff.Core
                 
                 Console.WriteLine($"\n[Torff] Connection Detected: {client.Client.RemoteEndPoint}");
 
-                client.Close();
+                NetworkStream stream = client.GetStream();
+
+                byte[] buffer = new byte[1024];
+
+                int bytesRead = stream.Read(buffer, 0, buffer.Length);
+
+                string requestText = System.Text.Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                Console.WriteLine(requestText);
+
+                client.Close();            
             }
         }
     }
