@@ -45,7 +45,7 @@ namespace Torff.Core
 
                     HttpResponse response = router.Route(request);
 
-                    byte[] responseBytes = System.Text.Encoding.UTF8.GetBytes(response.ToString());
+                    byte[] responseBytes = response.GetBytes();
                     stream.Write(responseBytes, 0, responseBytes.Length);
 
                     Console.WriteLine($"[Torff] Response sent with Status: {response.StatusCode}");

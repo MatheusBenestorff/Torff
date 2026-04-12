@@ -7,27 +7,25 @@ namespace Torff.Http
         public string Version { get; set; } = "HTTP/1.1";
         public string StatusCode { get; set; } = "200 OK";
         public string ContentType { get; set; } = "text/html; charset=UTF-8";
-        public string Body { get; set; } = "";
+        public byte[] BodyData { get; set; } = new byte[0];
 
-        public override string ToString()
+        public byte[] GetBytes()
         {
-            StringBuilder responseBuilder = new StringBuilder();
+            StringBuilder headersBuilder = new StringBuilder();
 
-            // Status
-            responseBuilder.Append($"{Version} {StatusCode}\r\n");
+            headersBuilder.Append($"{Version} {StatusCode}\r\n");
+            headersBuilder.Append($"Content-Type: {ContentType}\r\n");
+            headersBuilder.Append($"Content-Length: {BodyData.Length}\r\n");
+            headersBuilder.Append("\r\n");
 
-            // Headers
-            responseBuilder.Append($"Content-Type: {ContentType}\r\n");
+            byte[] headersBytes = Encoding.UTF8.GetBytes(headersBuilder.ToString());
 
-            int contentLength = Encoding.UTF8.GetByteCount(Body);
-            responseBuilder.Append($"Content-Length: {contentLength}\r\n");
+            byte[] fullResponse = new byte[headersBytes.Length + BodyData.Length];
 
-            responseBuilder.Append("\r\n");
+            Buffer.BlockCopy(headersBytes, 0, fullResponse, 0, headersBytes.Length);
+            Buffer.BlockCopy(BodyData, 0, fullResponse, headersBytes.Length, BodyData.Length);
 
-            // Body
-            responseBuilder.Append(Body);
-
-            return responseBuilder.ToString();
+            return fullResponse;
         }
     }
 }
