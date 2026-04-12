@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   torff-server:
     build:
@@ -8,4 +6,6 @@ services:
     container_name: torff_container
     ports:
       - "8080:8080"
+    volumes:
+      - ./src/wwwroot:/app/wwwroot
     tty: true
