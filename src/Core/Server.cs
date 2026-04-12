@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using Torff.Http;
+using Torff.Routing;
 
 namespace Torff.Core
 {
@@ -40,19 +41,14 @@ namespace Torff.Core
                 {
                     Console.WriteLine($"[Torff] Request processed: The browser wants to make a {request.Method} request to the path {request.Path}");
 
-                    HttpResponse response = new HttpResponse
-                    {
-                        Body = $"<html><body style='font-family: sans-serif;'>" +
-                            $"<h1>Hello, world! Torff is alive!</h1>" +
-                            $"<p>You accessed the path: <strong>{request.Path}</strong></p>" +
-                            $"</body></html>"
-                    };
+                    Router router = new Router();
+
+                    HttpResponse response = router.Route(request);
 
                     byte[] responseBytes = System.Text.Encoding.UTF8.GetBytes(response.ToString());
-
                     stream.Write(responseBytes, 0, responseBytes.Length);
 
-                    Console.WriteLine("[Torff] Your response was sent successfully!");
+                    Console.WriteLine($"[Torff] Response sent with Status: {response.StatusCode}");
                 }
 
                 client.Close();
