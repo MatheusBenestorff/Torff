@@ -7,18 +7,45 @@ namespace Torff.Http
             if (string.IsNullOrWhiteSpace(rawRequest)) return null;
 
             string[] lines = rawRequest.Split('\n');
-
             string firstLine = lines[0].Trim();
-
             string[] parts = firstLine.Split(' ');
 
             if (parts.Length < 3) return null;
 
-            return new HttpRequest
+            var request = new HttpRequest
             {
-                Method = parts[0], // "GET"
-                Path = parts[1]    // "/index.html"
+                Method = parts[0],
+                QueryParameters = new Dictionary<string, string>() 
             };
+
+            string rawPath = parts[1];
+
+            if (rawPath.Contains("?"))
+            {
+                string[] pathParts = rawPath.Split('?');
+                request.Path = pathParts[0]; 
+                
+                string queryString = pathParts[1]; 
+
+                string[] queryPairs = queryString.Split('&');
+                foreach (var pair in queryPairs)
+                {
+                    string[] keyValue = pair.Split('=');
+                    
+                    if (keyValue.Length == 2)
+                    {
+                        string key = Uri.UnescapeDataString(keyValue[0]);
+                        string value = Uri.UnescapeDataString(keyValue[1]);
+                        request.QueryParameters[key] = value;
+                    }
+                }
+            }
+            else
+            {
+                request.Path = rawPath;
+            }
+
+            return request;
         }
     }
 }

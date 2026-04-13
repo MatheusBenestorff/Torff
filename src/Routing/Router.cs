@@ -12,14 +12,6 @@ namespace Torff.Routing
         {
             _baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             _apiRoutes = new Dictionary<string, Func<HttpRequest, HttpResponse>>();
-
-            _apiRoutes.Add("/api/status", (req) => {
-                return HttpResponse.Json(new { 
-                    status = "online", 
-                    server = "Torff", 
-                    time = DateTime.Now.ToString("HH:mm:ss") 
-                });
-            });
         }
 
         public HttpResponse Route(HttpRequest request)
