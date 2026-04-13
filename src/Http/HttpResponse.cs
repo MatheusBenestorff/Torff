@@ -27,5 +27,17 @@ namespace Torff.Http
 
             return fullResponse;
         }
+
+        public static HttpResponse Json(object data)
+        {
+            string jsonString = System.Text.Json.JsonSerializer.Serialize(data);
+            
+            return new HttpResponse
+            {
+                StatusCode = "200 OK",
+                ContentType = "application/json",
+                BodyData = System.Text.Encoding.UTF8.GetBytes(jsonString)
+            };
+        }
     }
 }

@@ -6,14 +6,29 @@ namespace Torff.Routing
     public class Router
     {
         private readonly string _baseDirectory;
+        private readonly Dictionary<string, Func<HttpRequest, HttpResponse>> _apiRoutes;
 
         public Router()
         {
             _baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            _apiRoutes = new Dictionary<string, Func<HttpRequest, HttpResponse>>();
+
+            _apiRoutes.Add("/api/status", (req) => {
+                return HttpResponse.Json(new { 
+                    status = "online", 
+                    server = "Torff", 
+                    time = DateTime.Now.ToString("HH:mm:ss") 
+                });
+            });
         }
 
         public HttpResponse Route(HttpRequest request)
         {
+            if (_apiRoutes.ContainsKey(request.Path))
+            {
+                return _apiRoutes[request.Path](request);
+            }
+
             string requestedFile = request.Path == "/" ? "index.html" : request.Path.TrimStart('/');
 
             string filePath = Path.Combine(_baseDirectory, requestedFile);
@@ -22,7 +37,6 @@ namespace Torff.Routing
             {
                 byte[] fileContent = File.ReadAllBytes(filePath);
 
-                // Pega a extensão (ex: ".png") e descobre o tipo
                 string extension = Path.GetExtension(filePath).ToLower();
                 string contentType = GetContentType(extension);
 
@@ -33,16 +47,14 @@ namespace Torff.Routing
                     BodyData = fileContent
                 };
             }
-            else
+
+            return new HttpResponse
             {
-                string notFoundHtml = "<h1>404 Error</h1><p>Page not found on the Torff server.</p>";
-                return new HttpResponse
-                {
-                    StatusCode = "404 Not Found",
-                    ContentType = "text/html; charset=UTF-8",
-                    BodyData = Encoding.UTF8.GetBytes(notFoundHtml)
-                };
-            }
+                StatusCode = "404 Not Found",
+                ContentType = "text/html; charset=UTF-8",
+                BodyData = Encoding.UTF8.GetBytes("<h1>404</h1><p>Not Found.</p>")
+            };
+            
         }
 
         private string GetContentType(string extension)
