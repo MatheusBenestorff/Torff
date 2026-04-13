@@ -21,6 +21,33 @@
       h1 {
         color: #0078d4;
       }
+      form {
+        margin-top: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+      }
+      input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 250px;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #0078d4;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button:hover {
+        background-color: #005a9e;
+      }
     </style>
   </head>
   <body>
@@ -30,6 +57,12 @@
         This HTML is coming directly from a file in the folder
         <strong>wwwroot</strong>.
       </p>
+
+      <form method="POST" action="/api/teste">
+        <input type="text" name="usuario" placeholder="Digite seu nome" required />
+        <input type="text" name="projeto" placeholder="Nome do projeto" required />
+        <button type="submit">Send Data via POST</button>
+      </form>
     </div>
   </body>
 </html>

@@ -36,7 +36,7 @@ namespace Torff.Core
             try
             {
                 NetworkStream stream = client.GetStream();
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[4096];
                 int bytesRead = stream.Read(buffer, 0, buffer.Length);
 
                 if (bytesRead > 0)
@@ -46,6 +46,7 @@ namespace Torff.Core
 
                     if (request != null)
                     {
+
                         Router router = new Router();
                         HttpResponse response = router.Route(request);
 
