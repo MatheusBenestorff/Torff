@@ -1,5 +1,7 @@
 using System.Text;
 using Torff.Http;
+using Torff.Server.Adapters; 
+using Torff.Server.Mocks;
 
 namespace Torff.Routing
 {
@@ -14,11 +16,15 @@ namespace Torff.Routing
             _apiRoutes = new Dictionary<string, Func<HttpRequest, HttpResponse>>();
         }
 
-        public HttpResponse Route(HttpRequest request)
+        public HttpResponse Route(HttpRequest request, string clientIp)
         {
-            if (_apiRoutes.ContainsKey(request.Path))
+            if (request.Path.StartsWith("/api"))
             {
-                return _apiRoutes[request.Path](request);
+                var ttpRequest = TtpAdapter.ConvertToTtp(request, clientIp);
+
+                var ttpResponse = MockFramework.Processar(ttpRequest);
+
+                return TtpAdapter.ConvertToHttp(ttpResponse);
             }
 
             string requestedFile = request.Path == "/" ? "index.html" : request.Path.TrimStart('/');

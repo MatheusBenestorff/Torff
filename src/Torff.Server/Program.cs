@@ -9,9 +9,8 @@ namespace Torff
         {
             Console.WriteLine("Starting the Torff Web Server...");
             ServerConfig config = ConfigLoader.Load("torff.json");
-            
-            Server server = new Server(config);
 
+            Core.Server server = new Core.Server(config);
             server.Start();
         }
     }

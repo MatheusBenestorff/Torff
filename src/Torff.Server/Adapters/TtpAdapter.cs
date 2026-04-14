@@ -22,5 +22,30 @@ namespace Torff.Server.Adapters
 
             return ttpRequest;
         }
+
+        public static HttpResponse ConvertToHttp(TtpResponse ttpResponse)
+        {
+            if (ttpResponse == null) return null;
+
+            return new HttpResponse
+            {
+                StatusCode = GetStatusString(ttpResponse.StatusCode),
+                ContentType = ttpResponse.ContentType,
+                BodyData = ttpResponse.Body
+            };
+        }
+
+        private static string GetStatusString(int code)
+        {
+            return code switch
+            {
+                200 => "200 OK",
+                201 => "201 Created",
+                400 => "400 Bad Request",
+                404 => "404 Not Found",
+                500 => "500 Internal Server Error",
+                _ => $"{code} Unknown"
+            };
+        }
     }
 }

@@ -70,7 +70,7 @@ namespace Torff.Core
                         }
 
                         Router router = new Router(_config.WebRoot);
-                        HttpResponse response = router.Route(request);
+                        HttpResponse response = router.Route(request, clientIp);
                         
                         response.KeepAlive = keepAlive;
 
