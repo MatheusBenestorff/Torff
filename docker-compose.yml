@@ -5,7 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: torff_container
     ports:
-      - "8080:8080"
+      - "8080:8080" 
     volumes:
-      - ./src/wwwroot:/app/wwwroot
+      - ./src/Torff.Server/wwwroot:/app/wwwroot
+      - ./torff.json:/app/torff.json
     tty: true
