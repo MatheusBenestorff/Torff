@@ -10,7 +10,6 @@ namespace Torff.Ttp
         
         public Dictionary<string, string> Query { get; set; } = new Dictionary<string, string>();
         public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
-        public Dictionary<string, string> Form { get; set; } = new Dictionary<string, string>();
         
         public string Body { get; set; } = "";
         
