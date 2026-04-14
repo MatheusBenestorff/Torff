@@ -1,0 +1,6 @@
+{
+  "Port": 8080,
+  "WebRoot": "src/wwwroot",
+  "EnableKeepAlive": true,
+  "TimeoutSeconds": 5
+}

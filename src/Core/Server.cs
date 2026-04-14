@@ -1,26 +1,25 @@
-using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 using Torff.Http;
 using Torff.Routing;
+using Torff.Config;
 
 namespace Torff.Core
 {
     public class Server
     {
-        private readonly int _port;
+        private readonly ServerConfig _config;
 
-        public Server(int port)
+        public Server(ServerConfig config)
         {
-            _port = port;
+            _config = config;
         }
-
         public void Start()
         {
-            TcpListener listener = new TcpListener(IPAddress.Any, _port);
+            TcpListener listener = new TcpListener(IPAddress.Any, _config.Port);
             listener.Start();
-            Console.WriteLine($"[Torff] Server started and listening on port {_port}...");
+            Console.WriteLine($"[Torff] Server started and listening on port {_config.Port}...");
+            Console.WriteLine($"[Torff] Root Folder: {_config.WebRoot} | Keep-Alive: {_config.EnableKeepAlive}");
 
             while (true)
             {
@@ -39,8 +38,8 @@ namespace Torff.Core
             {
                 NetworkStream stream = client.GetStream();
 
-                stream.ReadTimeout = 5000;
-                bool keepAlive = true;
+                stream.ReadTimeout = _config.TimeoutSeconds * 1000;
+                bool keepAlive = _config.EnableKeepAlive;
 
                 while (keepAlive)
                 {
@@ -70,7 +69,7 @@ namespace Torff.Core
                             keepAlive = false;
                         }
 
-                        Router router = new Router();
+                        Router router = new Router(_config.WebRoot);
                         HttpResponse response = router.Route(request);
                         
                         response.KeepAlive = keepAlive;

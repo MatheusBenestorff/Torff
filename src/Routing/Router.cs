@@ -8,9 +8,9 @@ namespace Torff.Routing
         private readonly string _baseDirectory;
         private readonly Dictionary<string, Func<HttpRequest, HttpResponse>> _apiRoutes;
 
-        public Router()
+        public Router(string webRootFolder)
         {
-            _baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            _baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), webRootFolder);
             _apiRoutes = new Dictionary<string, Func<HttpRequest, HttpResponse>>();
         }
 
