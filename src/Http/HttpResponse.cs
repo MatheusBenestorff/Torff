@@ -8,6 +8,7 @@ namespace Torff.Http
         public string StatusCode { get; set; } = "200 OK";
         public string ContentType { get; set; } = "text/html; charset=UTF-8";
         public byte[] BodyData { get; set; } = new byte[0];
+        public bool KeepAlive { get; set; } = true;
 
         public byte[] GetBytes()
         {
@@ -16,6 +17,10 @@ namespace Torff.Http
             headersBuilder.Append($"{Version} {StatusCode}\r\n");
             headersBuilder.Append($"Content-Type: {ContentType}\r\n");
             headersBuilder.Append($"Content-Length: {BodyData.Length}\r\n");
+            
+            string connectionStatus = KeepAlive ? "keep-alive" : "close";
+            headersBuilder.Append($"Connection: {connectionStatus}\r\n");
+            
             headersBuilder.Append("\r\n");
 
             byte[] headersBytes = Encoding.UTF8.GetBytes(headersBuilder.ToString());
