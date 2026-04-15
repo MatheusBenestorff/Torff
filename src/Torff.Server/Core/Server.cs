@@ -14,7 +14,7 @@ namespace Torff.Core
         {
             _config = config;
         }
-        public void Start()
+        public async Task StartAsync()
         {
             TcpListener listener = new TcpListener(IPAddress.Any, _config.Port);
             listener.Start();
@@ -23,14 +23,13 @@ namespace Torff.Core
 
             while (true)
             {
-                TcpClient client = listener.AcceptTcpClient();
-                Console.WriteLine($"\n[Torff] New connection detected: {client.Client.RemoteEndPoint}");
-
-                Task.Run(() => ProcessClient(client));
+                TcpClient client = await listener.AcceptTcpClientAsync();
+                
+                _ = ProcessClientAsync(client);
             }
         }
 
-        private void ProcessClient(TcpClient client)
+        private async Task ProcessClientAsync(TcpClient client)
         {
             string clientIp = client.Client.RemoteEndPoint.ToString();
 
@@ -46,15 +45,21 @@ namespace Torff.Core
                     byte[] buffer = new byte[4096];
                     
                     int bytesRead = 0;
-
-                    try 
+                    using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(_config.TimeoutSeconds)))
                     {
-                        bytesRead = stream.Read(buffer, 0, buffer.Length);
-                    } 
-                    catch (IOException) 
-                    {
-                        Console.WriteLine($"[Torff] Timeout reached for {clientIp}. Ending inactivity.");
-                        break; 
+                        try 
+                        {
+                            bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
+                        } 
+                        catch (OperationCanceledException)
+                        {
+                            Console.WriteLine($"[Torff] Timeout reached for {clientIp}. Ending inactivity.");
+                            break; 
+                        }
+                        catch (Exception)
+                        {
+                            break;
+                        }
                     }
 
                     if (bytesRead == 0) break;
@@ -75,7 +80,8 @@ namespace Torff.Core
                         response.KeepAlive = keepAlive;
 
                         byte[] responseBytes = response.GetBytes();
-                        stream.Write(responseBytes, 0, responseBytes.Length);
+
+                        await stream.WriteAsync(responseBytes, 0, responseBytes.Length);
                         
                         Console.WriteLine($"[Torff] Response sent ({response.StatusCode}) to {clientIp}. Keeping the connection open: {keepAlive}");
                     }
@@ -84,7 +90,6 @@ namespace Torff.Core
                         break;
                     }
                 }
-
             }
             catch (Exception ex)
             {
