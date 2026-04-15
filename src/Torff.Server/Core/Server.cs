@@ -3,16 +3,28 @@ using System.Net.Sockets;
 using Torff.Http;
 using Torff.Routing;
 using Torff.Config;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace Torff.Core
 {
     public class Server
     {
         private readonly ServerConfig _config;
+        private X509Certificate2? _certificate;
 
         public Server(ServerConfig config)
         {
             _config = config;
+
+            if (_config.EnableHttps)
+            {
+                if (!File.Exists(_config.CertificatePath))
+                {
+                    throw new FileNotFoundException($"[Torff-Erro] Certificado não encontrado em: {_config.CertificatePath}");
+                }
+                _certificate = new X509Certificate2(_config.CertificatePath, _config.CertificatePassword);
+            }
         }
         public async Task StartAsync()
         {
@@ -35,9 +47,19 @@ namespace Torff.Core
 
             try
             {
-                NetworkStream stream = client.GetStream();
+                NetworkStream networkStream = client.GetStream();
+                
+                Stream stream = networkStream;
 
                 stream.ReadTimeout = _config.TimeoutSeconds * 1000;
+
+                if (_config.EnableHttps)
+                {
+                    var sslStream = new SslStream(networkStream, false);
+                    await sslStream.AuthenticateAsServerAsync(_certificate, clientCertificateRequired: false, checkCertificateRevocation: true);
+                    stream = sslStream; 
+                }
+                
                 bool keepAlive = _config.EnableKeepAlive;
 
                 while (keepAlive)

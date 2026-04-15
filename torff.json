@@ -1,6 +1,9 @@
 {
-  "Port": 3000,
+  "Port": 5001,
   "WebRoot": "src/wwwroot",
   "EnableKeepAlive": true,
-  "TimeoutSeconds": 5
+  "TimeoutSeconds": 5,
+  "EnableHttps": true,
+  "CertificatePath": "torff-cert.pfx",
+  "CertificatePassword": "senha123"
 }
