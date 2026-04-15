@@ -101,9 +101,7 @@ namespace Torff.Core
                         
                         response.KeepAlive = keepAlive;
 
-                        byte[] responseBytes = response.GetBytes();
-
-                        await stream.WriteAsync(responseBytes, 0, responseBytes.Length);
+                        await response.SendAsync(stream);
                         
                         Console.WriteLine($"[Torff] Response sent ({response.StatusCode}) to {clientIp}. Keeping the connection open: {keepAlive}");
                     }

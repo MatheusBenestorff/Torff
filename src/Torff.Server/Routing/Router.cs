@@ -60,7 +60,6 @@ namespace Torff.Routing
 
             if (File.Exists(filePath))
             {
-                byte[] fileContent = File.ReadAllBytes(filePath);
 
                 string extension = Path.GetExtension(filePath).ToLower();
                 string contentType = GetContentType(extension);
@@ -69,7 +68,7 @@ namespace Torff.Routing
                 {
                     StatusCode = "200 OK",
                     ContentType = contentType,
-                    BodyData = fileContent
+                    FilePath = filePath
                 };
             }
 

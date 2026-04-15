@@ -1,3 +1,4 @@
+
 using System.Text;
 
 namespace Torff.Http
@@ -7,42 +8,58 @@ namespace Torff.Http
         public string Version { get; set; } = "HTTP/1.1";
         public string StatusCode { get; set; } = "200 OK";
         public string ContentType { get; set; } = "text/html; charset=UTF-8";
+        
         public byte[] BodyData { get; set; } = new byte[0];
+        
+        public string FilePath { get; set; } 
+        
         public bool KeepAlive { get; set; } = true;
 
-        public byte[] GetBytes()
+        public async Task SendAsync(Stream networkStream)
         {
-            StringBuilder headersBuilder = new StringBuilder();
-
-            headersBuilder.Append($"{Version} {StatusCode}\r\n");
-            headersBuilder.Append($"Content-Type: {ContentType}\r\n");
-            headersBuilder.Append($"Content-Length: {BodyData.Length}\r\n");
+            StringBuilder headers = new StringBuilder();
+            headers.Append($"{Version} {StatusCode}\r\n");
+            headers.Append($"Content-Type: {ContentType}\r\n");
             
             string connectionStatus = KeepAlive ? "keep-alive" : "close";
-            headersBuilder.Append($"Connection: {connectionStatus}\r\n");
-            
-            headersBuilder.Append("\r\n");
+            headers.Append($"Connection: {connectionStatus}\r\n");
 
-            byte[] headersBytes = Encoding.UTF8.GetBytes(headersBuilder.ToString());
-
-            byte[] fullResponse = new byte[headersBytes.Length + BodyData.Length];
-
-            Buffer.BlockCopy(headersBytes, 0, fullResponse, 0, headersBytes.Length);
-            Buffer.BlockCopy(BodyData, 0, fullResponse, headersBytes.Length, BodyData.Length);
-
-            return fullResponse;
-        }
-
-        public static HttpResponse Json(object data)
-        {
-            string jsonString = System.Text.Json.JsonSerializer.Serialize(data);
-            
-            return new HttpResponse
+            if (!string.IsNullOrEmpty(FilePath) && File.Exists(FilePath))
             {
-                StatusCode = "200 OK",
-                ContentType = "application/json",
-                BodyData = System.Text.Encoding.UTF8.GetBytes(jsonString)
-            };
+                headers.Append("Transfer-Encoding: chunked\r\n\r\n");
+                
+                byte[] headerBytes = Encoding.UTF8.GetBytes(headers.ToString());
+                await networkStream.WriteAsync(headerBytes, 0, headerBytes.Length);
+
+                using (FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    byte[] buffer = new byte[8192]; 
+                    int bytesRead;
+
+                    while ((bytesRead = await fs.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                    {
+                        string hexSize = bytesRead.ToString("X") + "\r\n";
+                        byte[] hexBytes = Encoding.UTF8.GetBytes(hexSize);
+                        await networkStream.WriteAsync(hexBytes, 0, hexBytes.Length);
+
+                        await networkStream.WriteAsync(buffer, 0, bytesRead);
+
+                        byte[] crlf = Encoding.UTF8.GetBytes("\r\n");
+                        await networkStream.WriteAsync(crlf, 0, crlf.Length);
+                    }
+                }
+
+                byte[] endChunk = Encoding.UTF8.GetBytes("0\r\n\r\n");
+                await networkStream.WriteAsync(endChunk, 0, endChunk.Length);
+            }
+            else
+            {
+                headers.Append($"Content-Length: {BodyData.Length}\r\n\r\n");
+                
+                byte[] headerBytes = Encoding.UTF8.GetBytes(headers.ToString());
+                await networkStream.WriteAsync(headerBytes, 0, headerBytes.Length);
+                await networkStream.WriteAsync(BodyData, 0, BodyData.Length);
+            }
         }
     }
 }
